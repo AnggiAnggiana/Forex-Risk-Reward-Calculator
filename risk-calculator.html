@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forex Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="judul">
+        <h2>Forex Risk & Reward Ratio Calculator</h2>
+    </div>
+
+    <br><br>
+    <!-- Veris ahs sudahlah -->
+    <div id="calculator">
+        <form id="form-1" class="row gy-2 gx-3 align-items-center">
+            <div class="col-auto">
+                <label for="balance">Balance:</label>
+                <div class="input-group lebar">
+                    <div class="input-group-text">$</div>
+                    <input type="text" id="balance" step="1" required class="form-control" placeholder="100.000.000"  aria-describedby="addon-wrapping" oninput="formatNumber(this)">
+                </div>
+            </div>
+            <div class="col-auto">
+                <label for="pairChoices">Pair:</label>
+                <div class="input-group lebar">
+                    <select class="form-select" id="pairChoices" aria-label="Default select example" onchange="gantiPlaceholders()">
+                        <option selected>Pilih Pair</option>
+                        <option value="XAUUSD">XAUUSD</option>
+                        <option value="EURUSD">EURUSD</option>
+                        <option value="GBPUSD">GBPUSD</option>
+                        <option value="NZDUSD">NZDUSD</option>
+                        <option value="USDJPY">USDJPY</option>
+                        <option value="GBPJPY">GBPJPY</option>
+                        <option value="EURJPY">EURJPY</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-auto">
+                <label for="order">Order:</label>
+                <div class="input-group">
+                    <input type="radio" class="btn-check" name="type" id="option5" value="Buy" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary buy_sell" for="option5">Buy</label>
+
+                    <input type="radio" class="btn-check" name="type" id="option6" value="Sell" autocomplete="off">
+                    <label class="btn btn-outline-danger buy_sell" for="option6">Sell</label>
+                </div>
+            </div>
+            <div class="col-auto">
+                <label for="openPrice">Open Price:</label>
+                <div class="input-group lebar">
+                    <input type="text" id="openPrice" step="1" required class="form-control form-box" placeholder="Open Price"><br>
+                </div>
+            </div>
+            <div class="col-auto">
+                <label for="stopLoss">Stop Loss:</label>
+                <div class="input-group lebar">
+                    <input type="text" id="stopLoss" required class="form-control form-box" placeholder="Stop Loss"><br>
+                </div>
+            </div>
+            <div class="col-auto">
+                <label for="takeProfit">Take Profit:</label>
+                <div class="input-group lebar">
+                    <input type="text" id="takeProfit" step="1" required class="form-control form-box" placeholder="Take Profit"><br>
+                </div>
+            </div>
+            <div class="col-auto">
+                <label for="risk">Risk:</label>
+                <div class="input-group lebar">
+                    <div class="input-group-text">%</div>
+                    <input type="text" id="risk" required class="form-control" placeholder="2" oninput="chooseNumber(this)">
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger tombol-x" onclick="hapusForm(this)">x</button>
+            </div>
+        </form>
+        <div class="body-table">
+
+        </div>
+    </div>
+    <br>
+    <div class="tombol-result row">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-outline-primary me-md-2 hitung_tambah" onclick="tambahRow()">Add Form</button>
+        </div>
+        <div class="col-md-6">
+            <button type="button" id="hitung_nih" class="btn btn-outline-success hitung_tambah" onclick="calculateRiskReward()">Calculate</button>
+        </div>
+    </div>
+    <br>
+
+    <div class="show-result">
+        <div class="table-responsive">
+            <table id="resultTable" class="table table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        <th class="header-table">Pair </th>
+                        <th class="header-table">SL Pips </th>
+                        <th class="header-table">TP Pips </th>
+                        <th class="header-table">Risk Per Trade </th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td><span id="selectedPair"></span></td>
+                    <td><span id="slPips"></span></td>
+                    <td><span id="tpPips"></span></td>
+                    <td><span id="riskPerTrade"></span></td>
+                </tr>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+        <br>
+    </div>
+    
+    <style>
+        .judul {
+            text-align: center;
+            padding: 6px;
+        }
+        .lebar {
+            width: 150px;
+        }
+
+        #balance::placeholder {
+            color: rgba(41, 39, 39, 0.5);
+        }
+
+        #openPrice::placeholder {
+            color: rgba(41, 39, 39, 0.5);
+        }
+
+        #takeProfit::placeholder {
+            color: rgba(41, 39, 39, 0.5);
+        }
+
+        #stopLoss::placeholder {
+            color: rgba(41, 39, 39, 0.5);
+        }
+
+        #risk::placeholder {
+            color: rgba(41, 39, 39, 0.5);
+        }
+
+        #calculator {
+            margin-left: 95px;
+            margin-right: 35px;
+        }
+
+        .buy_sell {
+            width: 50px;
+            height: 35px;
+            margin-right: 6px;
+            transition: background-color 0.3s ease-in;
+            border-radius: 4px;
+        }
+
+        .btn-check:checked + .btn-success {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .btn-check:checked + .btn-danger {
+            background-color: #dc3545;
+            color:#fff;
+        }
+
+        .header-table {
+            background-color: rgb(2, 2, 58);
+            color: white;
+        }
+
+        .hitung_tambah {
+            width: 500px;
+            margin-left: 35px;
+            margin-right: 35px;
+        }
+
+        @media (max-width: 767px) {
+            .hitung_tambah {
+                width: 300px;
+                margin-left: 35px;
+                margin-right: 35px;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .hitung_tambah {
+                width: 300px;
+                margin-left: 35px;
+                margin-right: 35px;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1140px) {
+            .hitung_tambah {
+                width: 420px;
+                margin-left: 35px;
+                margin-right: 35px;
+            }
+        }
+
+        @media (min-width: 1142px) and (max-width: 1250px) {
+            .hitung_tambah {
+                width: 500px;
+                margin-left: 35px;
+                margin-right: 35px;
+            }
+        }
+
+        @media (min-width: 1251) {
+            .hitung_tambah {
+                width: 960px;
+                margin-left: 35px;
+                margin-right: 35px;
+            }
+        }
+        
+        .tombol-result {
+            margin-left: 65px;
+            margin-right: 55px;
+        }
+
+        .show-result {
+            margin-left: 95px;
+            margin-right: 35px;
+            width: 1140px;
+        }
+
+        @media (max-width: 727px) {
+            .show-result {
+                margin-left: 20px;
+                margin-right: 20px;
+                width: 460px;
+            }
+        }
+
+        @media (min-width: 728px) and (max-width: 991px) {
+            .show-result {
+                margin-left: 55px;
+                margin-right: 25px;
+                width: 690px;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1140px) {
+            .show-result {
+                margin-left: 75px;
+                margin-right: 35px;
+                width: 930px;
+            }
+        }
+
+        @media (min-width: 1142px) and (max-width: 1250px) {
+            .show-result {
+                margin-left: 75px;
+                margin-right: 35px;
+                width: 1050px;
+            }
+        }
+
+        @media (min-width: 1251) {
+            .show-result {
+                margin-left: 75px;
+                margin-right: 35px;
+                width: 1250px;
+            }
+        }
+
+        .tombol-x {
+            width: 40px;
+            height: 40px;
+            margin-top: -4px;
+        }
+
+        @media (max-width: 767px) {
+            .tombol-x {
+                width: 40px;
+                height: 40px;
+                transform: translateX(15px) translateY(13px);
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .tombol-x {
+                width: 40px;
+                height: 40px;
+                transform: translateX(15px) translateY(13px);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .tombol-x {
+                width: 40px;
+                height: 40px;
+                transform: translateX(15px) translateY(13px);
+            }
+        }
+
+        .row.gy-2.gx-3.align-items-center {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .col-auto {
+            margin-bottom: 1px;
+        }
+
+        .custom-x-btn {
+            width: 40px;
+            height: 40px;
+            transform: translateY(14px) translateX(24px);
+        }
+
+        @media (max-width: 767px) {
+            .custom-x-btn {
+                width: 40px;
+                height: 40px;
+                transform: translateY(14px) translateX(24px);
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .custom-x-btn {
+                width: 40px;
+                height: 40px;
+                transform: translateY(14px) translateX(24px);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .custom-x-btn {
+                width: 40px;
+                height: 40px;
+                transform: translateY(14px) translateX(24px);
+            }
+        }
+
+    </style>
+
+    <script src="calculator_risk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
+
