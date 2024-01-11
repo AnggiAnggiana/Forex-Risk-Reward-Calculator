@@ -591,7 +591,7 @@ function calculateRiskReward() {
         tr.appendChild(riskTotalId)
         
         // Menambahkan baris ke dalam tabel
-        // tableBody.appendChild(tr)
+        tableBody.appendChild(tr)
 
 
         let elements = document.querySelectorAll('span')
